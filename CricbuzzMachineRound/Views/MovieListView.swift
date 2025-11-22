@@ -18,75 +18,16 @@ struct MovieListView: View {
         NavigationStack {
             Group {
                 if let error = viewModel.errorMessage, viewModel.movies.isEmpty {
-                    VStack(spacing: 12) {
-                        Text("Something went wrong").font(.headline)
-                        Text(error).font(.subheadline).foregroundStyle(.secondary)
-                        Button("Retry") { Task { await viewModel.loadPopular() } }
-                            .buttonStyle(.borderedProminent)
-                    }
-                    .frame(maxWidth: .infinity, maxHeight: .infinity)
+                    ErrorStateView(message: error) { Task { await viewModel.loadPopular() } }
                 } else {
-                    ScrollViewReader { proxy in
-                        ScrollView {
-                            LazyVStack(alignment: .leading, spacing: 0) {
-                                Color.clear.frame(height: 0).id("top")
-                                if viewModel.isLoading && viewModel.movies.isEmpty {
-                                    ForEach(0..<6, id: \.self) { _ in
-                                        MovieRowSkeleton()
-                                            .padding(.horizontal, 16)
-                                            .padding(.vertical, 8)
-                                    }
-                                } else {
-                                    ForEach(viewModel.movies) { movie in
-                                        NavigationLink(value: movie) {
-                                            MovieRowView(
-                                                movie: movie,
-                                                isFavorite: viewModel.favoriteIDs.contains(movie.id),
-                                                runtimeMinutes: viewModel.runtime(for: movie.id),
-                                                onFavoriteToggle: { viewModel.toggleFavorite(id: movie.id) }
-                                            )
-                                            .padding(.horizontal, 16)
-                                            .padding(.vertical, 8)
-                                        }
-                                        .task {
-                                            await viewModel.loadMoreIfNeeded(currentItem: movie)
-                                            await viewModel.loadRuntimeIfNeeded(for: movie)
-                                        }
-                                        .onAppear {
-                                            if viewModel.searchText.isEmpty {
-                                                lastNonSearchAnchorID = movie.id
-                                            }
-                                        }
-                                    }
-                                    if viewModel.isLoadingMore {
-                                        HStack { Spacer(); ProgressView().padding(); Spacer() }
-                                    }
-                                }
-                            }
-                            .refreshable { await refresh() }
-                            .onChange(of: viewModel.movies) { _ in
-                                let query = viewModel.searchText
-                                guard !query.isEmpty else { return }
-                                if lastScrolledQuery != query {
-                                    withAnimation { proxy.scrollTo("top", anchor: .top) }
-                                    lastScrolledQuery = query
-                                }
-                            }
-                            .onChange(of: viewModel.searchText) { newValue in
-                                if newValue.isEmpty {
-                                    didScrollToTopForActiveSearch = false
-                                    lastScrolledQuery = ""
-                                    if let id = restoreAnchorID {
-                                        // Restore to where user was before search
-                                        withAnimation { proxy.scrollTo(id, anchor: .top) }
-                                        restoreAnchorID = nil
-                                    }
-                                } else if restoreAnchorID == nil {
-                                    restoreAnchorID = lastNonSearchAnchorID
-                                }
-                            }
-                        }
-                    }
+                    ListContent(
+                        viewModel: viewModel,
+                        didScrollToTopForActiveSearch: $didScrollToTopForActiveSearch,
+                        lastScrolledQuery: $lastScrolledQuery,
+                        lastNonSearchAnchorID: $lastNonSearchAnchorID,
+                        restoreAnchorID: $restoreAnchorID,
+                        refresh: refresh
+                    )
                 }
             }
             .navigationDestination(for: Movie.self) { movie in
@@ -111,14 +52,10 @@ struct MovieListView: View {
             }
             .searchable(text: Binding(
                 get: { viewModel.searchText },
-                set: { newValue in
-                    viewModel.searchText = newValue
-                }
+                set: { newValue in viewModel.searchText = newValue }
             ), placement: .navigationBarDrawer(displayMode: .always))
             .task {
-                if viewModel.movies.isEmpty {
-                    await viewModel.loadPopular()
-                }
+                if viewModel.movies.isEmpty { await viewModel.loadPopular() }
             }
             .background(Color(.systemBackground).ignoresSafeArea())
         }
@@ -132,6 +69,92 @@ struct MovieListView: View {
         }
     }
 }
+
+private struct ErrorStateView: View {
+    let message: String
+    let retry: () -> Void
+    var body: some View {
+        VStack(spacing: 12) {
+            Text("Something went wrong").font(.headline)
+            Text(message).font(.subheadline).foregroundStyle(.secondary)
+            Button("Retry", action: retry)
+                .buttonStyle(.borderedProminent)
+        }
+        .frame(maxWidth: .infinity, maxHeight: .infinity)
+    }
+}
+
+private struct ListContent: View {
+    @ObservedObject var viewModel: MovieListViewModel
+    @Binding var didScrollToTopForActiveSearch: Bool
+    @Binding var lastScrolledQuery: String
+    @Binding var lastNonSearchAnchorID: Int?
+    @Binding var restoreAnchorID: Int?
+    let refresh: () async -> Void
+    var body: some View {
+        ScrollViewReader { proxy in
+            ScrollView {
+                LazyVStack(alignment: .leading, spacing: 0) {
+                    Color.clear.frame(height: 0).id("top")
+                    if viewModel.isLoading && viewModel.movies.isEmpty {
+                        ForEach(0..<6, id: \.self) { _ in
+                            MovieRowSkeleton()
+                                .padding(.horizontal, 16)
+                                .padding(.vertical, 8)
+                        }
+                    } else {
+                        ForEach(viewModel.movies) { movie in
+                            NavigationLink(value: movie) {
+                                MovieRowView(
+                                    movie: movie,
+                                    isFavorite: viewModel.favoriteIDs.contains(movie.id),
+                                    runtimeMinutes: viewModel.runtime(for: movie.id),
+                                    onFavoriteToggle: { viewModel.toggleFavorite(id: movie.id) }
+                                )
+                                .padding(.horizontal, 16)
+                                .padding(.vertical, 8)
+                            }
+                            .task {
+                                await viewModel.loadMoreIfNeeded(currentItem: movie)
+                                await viewModel.loadRuntimeIfNeeded(for: movie)
+                            }
+                            .onAppear {
+                                if viewModel.searchText.isEmpty {
+                                    lastNonSearchAnchorID = movie.id
+                                }
+                            }
+                        }
+                        if viewModel.isLoadingMore {
+                            HStack { Spacer(); ProgressView().padding(); Spacer() }
+                        }
+                    }
+                }
+                .refreshable { await refresh() }
+                .onChange(of: viewModel.movies) { _ in
+                    let query = viewModel.searchText
+                    guard !query.isEmpty else { return }
+                    if lastScrolledQuery != query {
+                        withAnimation { proxy.scrollTo("top", anchor: .top) }
+                        lastScrolledQuery = query
+                    }
+                }
+                .onChange(of: viewModel.searchText) { newValue in
+                    if newValue.isEmpty {
+                        didScrollToTopForActiveSearch = false
+                        lastScrolledQuery = ""
+                        if let id = restoreAnchorID {
+                            withAnimation { proxy.scrollTo(id, anchor: .top) }
+                            restoreAnchorID = nil
+                        }
+                    } else if restoreAnchorID == nil {
+                        restoreAnchorID = lastNonSearchAnchorID
+                    }
+                }
+            }
+        }
+    }
+}
+
 private struct MovieRowSkeleton: View {
     var body: some View {
         HStack(spacing: 14) {
