@@ -186,10 +186,6 @@ When you tap a movie, the app pushes `MovieDetailView`, which shows:
   - TMDb sometimes returns videos that are not embeddable or are region/provider restricted.
   - In such cases, playback may fail even though all client‑side configuration is correct.
 
-- **Error UI**
-  - Errors are currently shown as inline text on the list/detail screens.
-  - Could be improved with non‑blocking toasts, pull‑to‑refresh, or dedicated error views.
-
 - **Offline behavior**
   - No explicit offline mode; the app relies on network connectivity.
   - SDWebImage’s disk cache helps for images that were previously loaded, but JSON data is not cached.
