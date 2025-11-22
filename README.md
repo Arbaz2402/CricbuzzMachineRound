@@ -9,9 +9,6 @@ The app uses **The Movie Database (TMDb)** APIs to:
 - **Search** movies by title
 - Mark movies as **favorites** (persisted across launches)
 - Play trailers **in‑app** using the YouTube iOS Player Helper SDK
-
-> This product uses the TMDb API but is not endorsed or certified by TMDb.
-
 ---
 
 ## App Preview
@@ -207,10 +204,6 @@ When you tap a movie, the app pushes `MovieDetailView`, which shows:
 - **YouTube trailer availability**
   - TMDb sometimes returns videos that are not embeddable or are region/provider restricted.
   - In such cases, playback may fail even though all client‑side configuration is correct.
-
-- **Error UI**
-  - Errors are currently shown as inline text on the list/detail screens.
-  - Could be improved with non‑blocking toasts, pull‑to‑refresh, or dedicated error views.
 
 - **Offline behavior**
   - No explicit offline mode; the app relies on network connectivity.
