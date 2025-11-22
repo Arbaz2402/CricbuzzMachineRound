@@ -11,7 +11,7 @@ import SDWebImageSwiftUI
 struct MovieRowView: View {
     let movie: Movie
     let isFavorite: Bool
-    let runtimeMinutes: Int?
+    let durationMinutes: Int?
     let onFavoriteToggle: () -> Void
 
     var body: some View {
@@ -20,7 +20,7 @@ struct MovieRowView: View {
                 PosterView(path: movie.posterPath)
                 FavoriteBadge(isFavorite: isFavorite, onTap: onFavoriteToggle)
             }
-            InfoSection(movie: movie, runtimeMinutes: runtimeMinutes)
+            InfoSection(movie: movie, durationMinutes: durationMinutes)
                 .frame(maxWidth: .infinity, alignment: .leading)
             Spacer(minLength: 0)
         }
@@ -71,7 +71,7 @@ private struct FavoriteBadge: View {
 
 private struct InfoSection: View {
     let movie: Movie
-    let runtimeMinutes: Int?
+    let durationMinutes: Int?
     var body: some View {
         VStack(alignment: .leading, spacing: 6) {
             Text(movie.title)
@@ -99,7 +99,7 @@ private struct InfoSection: View {
                 }
             }
             .font(.caption)
-            if let runtime = runtimeMinutes {
+            if let runtime = durationMinutes {
                 HStack(spacing: 6) {
                     Image(systemName: "clock")
                         .foregroundStyle(.secondary)
@@ -113,6 +113,6 @@ private struct InfoSection: View {
 }
 
 #Preview {
-    MovieRowView(movie: .init(id: 1, title: "The Batman", overview: "Vengeance.", posterPath: nil, backdropPath: nil, voteAverage: 7.8, releaseDate: "2022-03-04"), isFavorite: true, runtimeMinutes: 30, onFavoriteToggle: {})
+    MovieRowView(movie: .init(id: 1, title: "The Batman", overview: "Vengeance.", posterPath: nil, backdropPath: nil, voteAverage: 7.8, releaseDate: "2022-03-04"), isFavorite: true, durationMinutes: 30, onFavoriteToggle: {})
         .padding()
 }

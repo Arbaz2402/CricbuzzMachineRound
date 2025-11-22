@@ -33,8 +33,8 @@ private struct TrailerSection: View {
                             .frame(height: 220)
                             .clipShape(RoundedRectangle(cornerRadius: 12))
                     } else {
-                        if let d = viewModel.detail,
-                           let url = ImageURLBuilder.backdropURL(path: d.backdropPath) {
+                        if let detail = viewModel.detail,
+                           let url = ImageURLBuilder.backdropImageURL(path: detail.backdropPath) {
                             WebImage(url: url)
                                 .resizable()
                                 .scaledToFill()

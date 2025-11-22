@@ -53,13 +53,13 @@ private struct FavoriteRowLink: View {
             MovieRowView(
                 movie: movie,
                 isFavorite: true,
-                runtimeMinutes: viewModel.runtime(for: movie.id),
+                durationMinutes: viewModel.duration(for: movie.id),
                 onFavoriteToggle: { viewModel.toggleFavorite(id: movie.id) }
             )
             .padding(.horizontal, 16)
             .padding(.vertical, 8)
         }
-        .task { await viewModel.loadRuntimeIfNeeded(for: movie) }
+        .task { await viewModel.loadDurationIfNeeded(for: movie) }
     }
 }
 

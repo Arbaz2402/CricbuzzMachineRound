@@ -15,7 +15,7 @@ enum ImageURLBuilder {
             .appendingPathComponent(path)
     }
 
-    static func backdropURL(path: String?, size: String = "w780") -> URL? {
+    static func backdropImageURL(path: String?, size: String = "w780") -> URL? {
         guard let path, !path.isEmpty else { return nil }
         return APIConfig.shared.imagesBaseURL
             .appendingPathComponent(size)

@@ -16,7 +16,7 @@ final class MovieListViewModel: ObservableObject {
     @Published var searchText: String = ""
     @Published private(set) var errorMessage: String?
     @Published private(set) var favoriteIDs: Set<Int> = []
-    @Published private(set) var runtimes: [Int: Int] = [:]
+    @Published private(set) var durations: [Int: Int] = [:]
 
     private let moviesService: MovieServicing
     private let favorites: FavoritesStoring
@@ -62,7 +62,7 @@ final class MovieListViewModel: ObservableObject {
             totalPages = page.totalPages
             lastQuery = ""
             movies = page.results
-            prefetchRuntimes(for: page.results)
+            prefetchDurations(for: page.results)
         } catch {
             errorMessage = error.localizedDescription
         }
@@ -81,7 +81,7 @@ final class MovieListViewModel: ObservableObject {
             totalPages = page.totalPages
             lastQuery = query
             movies = page.results
-            prefetchRuntimes(for: page.results)
+            prefetchDurations(for: page.results)
         } catch {
             errorMessage = error.localizedDescription
         }
@@ -92,16 +92,16 @@ final class MovieListViewModel: ObservableObject {
         favorites.toggleFavorite(id: id)
         favoriteIDs = favorites.all()
     }
-    func runtime(for movieID: Int) -> Int? {
-        runtimes[movieID]
+    func duration(for movieID: Int) -> Int? {
+        durations[movieID]
     }
 
-    func loadRuntimeIfNeeded(for movie: Movie) async {
-        guard runtimes[movie.id] == nil else { return }
+    func loadDurationIfNeeded(for movie: Movie) async {
+        guard durations[movie.id] == nil else { return }
         do {
             let detail = try await moviesService.detail(id: movie.id)
             if let rt = detail.runtime {
-                runtimes[movie.id] = rt
+                durations[movie.id] = rt
             }
         } catch {
             // For list display, silently ignore runtime failures
@@ -140,28 +140,28 @@ final class MovieListViewModel: ObservableObject {
                 currentPage = page.page
                 totalPages = page.totalPages
                 movies.append(contentsOf: page.results)
-                prefetchRuntimes(for: page.results)
+                prefetchDurations(for: page.results)
             } else {
                 let page = try await moviesService.search(query: lastQuery, page: currentPage + 1)
                 currentPage = page.page
                 totalPages = page.totalPages
                 movies.append(contentsOf: page.results)
-                prefetchRuntimes(for: page.results)
+                prefetchDurations(for: page.results)
             }
         } catch {
             errorMessage = error.localizedDescription
         }
     }
 
-    private func prefetchRuntimes(for newMovies: [Movie], maxCount: Int = 12) {
+    private func prefetchDurations(for newMovies: [Movie], maxCount: Int = 12) {
         let subset = Array(newMovies.prefix(maxCount))
         for m in subset {
-            if runtimes[m.id] != nil { continue }
+            if durations[m.id] != nil { continue }
             Task.detached { [moviesService] in
                 do {
                     let detail = try await moviesService.detail(id: m.id)
                     if let rt = detail.runtime {
-                        await MainActor.run { [weak self] in self?.runtimes[m.id] = rt }
+                        await MainActor.run { [weak self] in self?.durations[m.id] = rt }
                     }
                 } catch { }
             }

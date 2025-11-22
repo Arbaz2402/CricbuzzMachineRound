@@ -108,7 +108,7 @@ private struct ListContent: View {
                                 MovieRowView(
                                     movie: movie,
                                     isFavorite: viewModel.favoriteIDs.contains(movie.id),
-                                    runtimeMinutes: viewModel.runtime(for: movie.id),
+                                    durationMinutes: viewModel.duration(for: movie.id),
                                     onFavoriteToggle: { viewModel.toggleFavorite(id: movie.id) }
                                 )
                                 .padding(.horizontal, 16)
@@ -116,7 +116,7 @@ private struct ListContent: View {
                             }
                             .task {
                                 await viewModel.loadMoreIfNeeded(currentItem: movie)
-                                await viewModel.loadRuntimeIfNeeded(for: movie)
+                                await viewModel.loadDurationIfNeeded(for: movie)
                             }
                             .onAppear {
                                 if viewModel.searchText.isEmpty {
