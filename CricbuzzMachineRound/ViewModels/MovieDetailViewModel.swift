@@ -2,7 +2,7 @@
 //  MovieDetailViewModel.swift
 //  CricbuzzMachineRound
 //
-//  Handles movie details, videos, and cast
+//  Created by Arbaz Kaladiya on 22/11/25.
 //
 
 import Foundation

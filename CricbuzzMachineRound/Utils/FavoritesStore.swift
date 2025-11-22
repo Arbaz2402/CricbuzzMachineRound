@@ -2,7 +2,7 @@
 //  FavoritesStore.swift
 //  CricbuzzMachineRound
 //
-//  Simple favorites persisting to UserDefaults
+//  Created by Arbaz Kaladiya on 22/11/25.
 //
 
 import Foundation

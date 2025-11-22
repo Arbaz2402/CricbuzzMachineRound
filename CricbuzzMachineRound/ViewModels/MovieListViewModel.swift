@@ -2,7 +2,7 @@
 //  MovieListViewModel.swift
 //  CricbuzzMachineRound
 //
-//  ViewModel for Popular/Search movies with favorites support
+//  Created by Arbaz Kaladiya on 22/11/25.
 //
 
 import Foundation

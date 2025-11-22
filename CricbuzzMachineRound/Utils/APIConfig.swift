@@ -2,7 +2,7 @@
 //  APIConfig.swift
 //  CricbuzzMachineRound
 //
-//  Centralized configuration for TMDb API.
+//  Created by Arbaz Kaladiya on 22/11/25.
 //
 
 import Foundation

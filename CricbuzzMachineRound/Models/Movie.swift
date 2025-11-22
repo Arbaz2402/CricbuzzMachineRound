@@ -2,7 +2,7 @@
 //  Movie.swift
 //  CricbuzzMachineRound
 //
-//  TMDb core models
+//  Created by Arbaz Kaladiya on 22/11/25.
 //
 
 import Foundation

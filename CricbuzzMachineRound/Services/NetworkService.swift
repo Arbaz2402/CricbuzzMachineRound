@@ -2,7 +2,7 @@
 //  NetworkService.swift
 //  CricbuzzMachineRound
 //
-//  Simple, interview-friendly networking in one file.
+//  Created by Arbaz Kaladiya on 22/11/25.
 //
 
 import Foundation

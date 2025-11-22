@@ -2,7 +2,7 @@
 //  APIManager.swift
 //  CricbuzzMachineRound
 //
-//  Central API aggregator for services.
+//  Created by Arbaz Kaladiya on 22/11/25.
 //
 
 import Foundation
