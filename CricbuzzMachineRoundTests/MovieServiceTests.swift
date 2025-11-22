@@ -144,6 +144,6 @@ final class MovieServiceTests: XCTestCase {
         let credits = try await service.credits(id: 42)
 
         XCTAssertEqual(credits.cast.first?.name, "A")
-        XCTAssertTrue(credits.crew.isEmpty)
+        XCTAssertEqual(credits.cast.count, 1)
     }
 }

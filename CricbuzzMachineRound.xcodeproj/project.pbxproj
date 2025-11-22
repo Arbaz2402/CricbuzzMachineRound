@@ -11,14 +11,30 @@
 		08F4D63D2ED1F14600C11C42 /* SDWebImageSwiftUI in Frameworks */ = {isa = PBXBuildFile; productRef = 08F4D63C2ED1F14600C11C42 /* SDWebImageSwiftUI */; };
 /* End PBXBuildFile section */
 
+/* Begin PBXContainerItemProxy section */
+		08FF83E92ED25E7E00D89A96 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 08F4D5B02ED0988200C11C42 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 08F4D5B72ED0988200C11C42;
+			remoteInfo = CricbuzzMachineRound;
+		};
+/* End PBXContainerItemProxy section */
+
 /* Begin PBXFileReference section */
 		08F4D5B82ED0988200C11C42 /* CricbuzzMachineRound.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = CricbuzzMachineRound.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		08FF83E52ED25E7E00D89A96 /* CricbuzzMachineRoundTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = CricbuzzMachineRoundTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
 		08F4D5BA2ED0988200C11C42 /* CricbuzzMachineRound */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
 			path = CricbuzzMachineRound;
+			sourceTree = "<group>";
+		};
+		08FF83E62ED25E7E00D89A96 /* CricbuzzMachineRoundTests */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			path = CricbuzzMachineRoundTests;
 			sourceTree = "<group>";
 		};
 /* End PBXFileSystemSynchronizedRootGroup section */
@@ -33,6 +49,13 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		08FF83E22ED25E7E00D89A96 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
@@ -40,6 +63,7 @@
 			isa = PBXGroup;
 			children = (
 				08F4D5BA2ED0988200C11C42 /* CricbuzzMachineRound */,
+				08FF83E62ED25E7E00D89A96 /* CricbuzzMachineRoundTests */,
 				08F4D5B92ED0988200C11C42 /* Products */,
 			);
 			sourceTree = "<group>";
@@ -48,6 +72,7 @@
 			isa = PBXGroup;
 			children = (
 				08F4D5B82ED0988200C11C42 /* CricbuzzMachineRound.app */,
+				08FF83E52ED25E7E00D89A96 /* CricbuzzMachineRoundTests.xctest */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -79,6 +104,29 @@
 			productReference = 08F4D5B82ED0988200C11C42 /* CricbuzzMachineRound.app */;
 			productType = "com.apple.product-type.application";
 		};
+		08FF83E42ED25E7E00D89A96 /* CricbuzzMachineRoundTests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 08FF83ED2ED25E7E00D89A96 /* Build configuration list for PBXNativeTarget "CricbuzzMachineRoundTests" */;
+			buildPhases = (
+				08FF83E12ED25E7E00D89A96 /* Sources */,
+				08FF83E22ED25E7E00D89A96 /* Frameworks */,
+				08FF83E32ED25E7E00D89A96 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				08FF83EA2ED25E7E00D89A96 /* PBXTargetDependency */,
+			);
+			fileSystemSynchronizedGroups = (
+				08FF83E62ED25E7E00D89A96 /* CricbuzzMachineRoundTests */,
+			);
+			name = CricbuzzMachineRoundTests;
+			packageProductDependencies = (
+			);
+			productName = CricbuzzMachineRoundTests;
+			productReference = 08FF83E52ED25E7E00D89A96 /* CricbuzzMachineRoundTests.xctest */;
+			productType = "com.apple.product-type.bundle.unit-test";
+		};
 /* End PBXNativeTarget section */
 
 /* Begin PBXProject section */
@@ -91,6 +139,10 @@
 				TargetAttributes = {
 					08F4D5B72ED0988200C11C42 = {
 						CreatedOnToolsVersion = 26.0.1;
+					};
+					08FF83E42ED25E7E00D89A96 = {
+						CreatedOnToolsVersion = 26.0.1;
+						TestTargetID = 08F4D5B72ED0988200C11C42;
 					};
 				};
 			};
@@ -113,12 +165,20 @@
 			projectRoot = "";
 			targets = (
 				08F4D5B72ED0988200C11C42 /* CricbuzzMachineRound */,
+				08FF83E42ED25E7E00D89A96 /* CricbuzzMachineRoundTests */,
 			);
 		};
 /* End PBXProject section */
 
 /* Begin PBXResourcesBuildPhase section */
 		08F4D5B62ED0988200C11C42 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		08FF83E32ED25E7E00D89A96 /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -135,7 +195,22 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		08FF83E12ED25E7E00D89A96 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 /* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		08FF83EA2ED25E7E00D89A96 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 08F4D5B72ED0988200C11C42 /* CricbuzzMachineRound */;
+			targetProxy = 08FF83E92ED25E7E00D89A96 /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
 
 /* Begin XCBuildConfiguration section */
 		08F4D5C12ED0988400C11C42 /* Debug */ = {
@@ -325,6 +400,50 @@
 			};
 			name = Release;
 		};
+		08FF83EB2ED25E7E00D89A96 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = 8C5KQH5228;
+				GENERATE_INFOPLIST_FILE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 18.0;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.arbaz.CricbuzzMachineRoundTests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				STRING_CATALOG_GENERATE_SYMBOLS = NO;
+				SWIFT_APPROACHABLE_CONCURRENCY = YES;
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/CricbuzzMachineRound.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/CricbuzzMachineRound";
+			};
+			name = Debug;
+		};
+		08FF83EC2ED25E7E00D89A96 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = 8C5KQH5228;
+				GENERATE_INFOPLIST_FILE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 18.0;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.arbaz.CricbuzzMachineRoundTests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				STRING_CATALOG_GENERATE_SYMBOLS = NO;
+				SWIFT_APPROACHABLE_CONCURRENCY = YES;
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/CricbuzzMachineRound.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/CricbuzzMachineRound";
+			};
+			name = Release;
+		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
@@ -342,6 +461,15 @@
 			buildConfigurations = (
 				08F4D5C42ED0988400C11C42 /* Debug */,
 				08F4D5C52ED0988400C11C42 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		08FF83ED2ED25E7E00D89A96 /* Build configuration list for PBXNativeTarget "CricbuzzMachineRoundTests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				08FF83EB2ED25E7E00D89A96 /* Debug */,
+				08FF83EC2ED25E7E00D89A96 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
