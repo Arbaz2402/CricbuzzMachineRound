@@ -55,17 +55,15 @@ final class MovieDetailViewModel: ObservableObject {
         }
         isLoading = false
 
-        // Load credits independently; if it fails, retry silently in background
         await loadCreditsWithRetry()
     }
 
     private func loadCreditsWithRetry(maxAttempts: Int = 3, baseDelay: UInt64 = 300_000_000) async {
-        // Try once immediately
         do {
             self.credits = try await service.credits(id: id)
             return
         } catch {
-            // fall through to retries
+
         }
 
         for attempt in 1...maxAttempts {
@@ -85,22 +83,7 @@ final class MovieDetailViewModel: ObservableObject {
         isFavorite = favorites.isFavorite(id: id)
     }
 
-    var trailerURL: URL? {
-        guard let yt = videos.first(where: { $0.site.lowercased() == "youtube" && $0.type.lowercased() == "trailer" }) else { return nil }
-        return URL(string: "https://www.youtube.com/embed/\(yt.key)?playsinline=1&modestbranding=1&rel=0")
-    }
-
-    // For native AVPlayer playback. TMDb usually provides YouTube keys, which are not natively playable.
-    // Return nil by default; if you later have a direct MP4/HLS URL from another provider, return it here.
-    var nativeTrailerURL: URL? {
-        // Example hook: if TMDb ever returns a directly playable URL in future.
-        // For now, keep nil to use external YouTube fallback in the view.
-        return nil
-    }
-
-    // YouTube embed support (in-app playback)
     var youtubeVideoID: String? {
-        // Only use official YouTube trailers, ignore teasers/featurettes/BTS
         return videos.first(where: {
             $0.site.lowercased() == "youtube" && $0.type.lowercased() == "trailer"
         })?.key

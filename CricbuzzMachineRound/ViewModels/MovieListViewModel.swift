@@ -16,12 +16,11 @@ final class MovieListViewModel: ObservableObject {
     @Published var searchText: String = ""
     @Published private(set) var errorMessage: String?
     @Published private(set) var favoriteIDs: Set<Int> = []
-    @Published private(set) var runtimes: [Int: Int] = [:] // movieID -> runtime in minutes
+    @Published private(set) var runtimes: [Int: Int] = [:]
 
     private let moviesService: MovieServicing
     private let favorites: FavoritesStoring
     private var searchCancellable: AnyCancellable?
-    // no background task tracking; simple async/await is sufficient and smoother
     private var favoritesObserver: Any?
 
     // Pagination state
@@ -91,9 +90,6 @@ final class MovieListViewModel: ObservableObject {
         favorites.toggleFavorite(id: id)
         favoriteIDs = favorites.all()
     }
-
-    // MARK: - Runtime support for list rows
-
     func runtime(for movieID: Int) -> Int? {
         runtimes[movieID]
     }
@@ -119,7 +115,7 @@ final class MovieListViewModel: ObservableObject {
         }
     }
 
-    // MARK: - Pagination
+    // Pagination
     func loadMoreIfNeeded(currentItem item: Movie?) async {
         guard !isLoading, !isLoadingMore else { return }
         guard currentPage < totalPages else { return }

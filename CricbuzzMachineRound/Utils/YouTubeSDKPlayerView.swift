@@ -34,14 +34,13 @@ struct YouTubeSDKPlayerView: UIViewRepresentable {
 
     func updateUIView(_ uiView: YTPlayerView, context: Context) {
         let playerVars: [String: Any] = [
-            "playsinline": 1,            // play inside app, not full-screen YouTube UI
+            "playsinline": 1,
             "modestbranding": 1,
             "rel": 0,
             "autoplay": autoPlay ? 1 : 0,
-            "controls": 1               // native YouTube controls
+            "controls": 1
         ]
 
-        // Load the requested video ID (simple version; can be optimized later)
         uiView.load(withVideoId: videoID, playerVars: playerVars)
     }
 }

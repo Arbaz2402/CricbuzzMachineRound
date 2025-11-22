@@ -44,7 +44,7 @@ struct MovieDetail: Codable, Equatable {
     let title: String
     let overview: String?
     let genres: [Genre]?
-    let runtime: Int? // minutes
+    let runtime: Int?
     let voteAverage: Double?
     let posterPath: String?
     let backdropPath: String?
@@ -68,6 +68,6 @@ struct Video: Codable, Identifiable, Equatable, Hashable {
     let id: String
     let key: String
     let name: String
-    let site: String // e.g. "YouTube"
-    let type: String // e.g. "Trailer"
+    let site: String
+    let type: String
 }

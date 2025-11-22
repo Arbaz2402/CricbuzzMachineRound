@@ -7,7 +7,6 @@
 
 import Foundation
 
-// MARK: - HTTP Method
 enum HTTPMethod: String {
     case get = "GET"
     case post = "POST"
@@ -16,7 +15,6 @@ enum HTTPMethod: String {
     case delete = "DELETE"
 }
 
-// MARK: - Network Error
 enum NetworkError: LocalizedError {
     case invalidURL
     case decodingFailed
@@ -31,7 +29,6 @@ enum NetworkError: LocalizedError {
     }
 }
 
-// MARK: - Endpoint
 struct Endpoint {
     let path: String
     var method: HTTPMethod = .get
@@ -40,7 +37,6 @@ struct Endpoint {
 
     func asURLRequest(baseURL: URL, timeout: TimeInterval) throws -> URLRequest {
         var components = URLComponents(url: baseURL, resolvingAgainstBaseURL: true)
-        // Preserve existing base path (e.g., "/3") and append endpoint path
         let basePath = components?.path ?? ""
         components?.path = basePath.appending(path)
         components?.queryItems = queryItems.isEmpty ? nil : queryItems
@@ -54,7 +50,6 @@ struct Endpoint {
     }
 }
 
-// MARK: - Network Service
 final class NetworkService {
     private let config: APIConfig
     private let timeout: TimeInterval

@@ -29,7 +29,6 @@ struct MovieListView: View {
                     ScrollViewReader { proxy in
                         ScrollView {
                             LazyVStack(alignment: .leading, spacing: 0) {
-                                // Anchor for scrolling to top when search/query changes
                                 Color.clear.frame(height: 0).id("top")
                                 if viewModel.isLoading && viewModel.movies.isEmpty {
                                     ForEach(0..<6, id: \.self) { _ in
@@ -54,7 +53,6 @@ struct MovieListView: View {
                                             await viewModel.loadRuntimeIfNeeded(for: movie)
                                         }
                                         .onAppear {
-                                            // Track position only when not searching, so we can restore later
                                             if viewModel.searchText.isEmpty {
                                                 lastNonSearchAnchorID = movie.id
                                             }
@@ -66,17 +64,14 @@ struct MovieListView: View {
                                 }
                             }
                             .refreshable { await refresh() }
-                            // Only scroll to top after new search results arrive
                             .onChange(of: viewModel.movies) { _ in
                                 let query = viewModel.searchText
                                 guard !query.isEmpty else { return }
-                                // Avoid jumping while typing; scroll when results update for this query
                                 if lastScrolledQuery != query {
                                     withAnimation { proxy.scrollTo("top", anchor: .top) }
                                     lastScrolledQuery = query
                                 }
                             }
-                            // Capture anchor when search starts; restore when canceling
                             .onChange(of: viewModel.searchText) { newValue in
                                 if newValue.isEmpty {
                                     didScrollToTopForActiveSearch = false
@@ -87,7 +82,6 @@ struct MovieListView: View {
                                         restoreAnchorID = nil
                                     }
                                 } else if restoreAnchorID == nil {
-                                    // First time entering a search session; remember current anchor
                                     restoreAnchorID = lastNonSearchAnchorID
                                 }
                             }
@@ -121,10 +115,7 @@ struct MovieListView: View {
                     viewModel.searchText = newValue
                 }
             ), placement: .navigationBarDrawer(displayMode: .always))
-            // Debounced in ViewModel; no need for extra triggers here
             .task {
-                // Only perform initial load when there is no data yet.
-                // This prevents search results from being overwritten when returning from detail.
                 if viewModel.movies.isEmpty {
                     await viewModel.loadPopular()
                 }
@@ -141,8 +132,6 @@ struct MovieListView: View {
         }
     }
 }
-
-// MARK: - Lightweight Skeleton Row
 private struct MovieRowSkeleton: View {
     var body: some View {
         HStack(spacing: 14) {

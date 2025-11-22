@@ -16,6 +16,6 @@ final class APIConfig {
     let imagesBaseURL = URL(string: "https://image.tmdb.org/t/p")!
 
     // Common
-    let defaultLanguage = "en-US"
+    let defaultLanguage = "en-IN"
     let defaultImageSize = "w500" // image path: imagesBaseURL/appendingPathComponent(size)/appendingPathComponent(posterPath)
 }

@@ -36,14 +36,9 @@ private struct Chip: View {
         .foregroundStyle(.white)
     }
 }
-
-// Runtime formatting centralized in Utils/Formatters.swift
-
     var body: some View {
         ScrollView {
             VStack(alignment: .leading, spacing: 16) {
-
-                // Trailer area: inline in-app YouTube player
                 Group {
                     if let ytID = viewModel.youtubeVideoID {
                         ZStack {
@@ -52,7 +47,6 @@ private struct Chip: View {
                                     .frame(height: 220)
                                     .clipShape(RoundedRectangle(cornerRadius: 12))
                             } else {
-                                // Backdrop placeholder before playing
                                 if let d = viewModel.detail,
                                    let url = ImageURLBuilder.backdropURL(path: d.backdropPath) {
                                     WebImage(url: url)
@@ -81,7 +75,6 @@ private struct Chip: View {
                         .frame(height: 220)
                         .clipShape(RoundedRectangle(cornerRadius: 12))
                     } else {
-                        // Always show a neutral placeholder (no text) to avoid layout jumps
                         Rectangle()
                             .fill(Color(.secondarySystemFill))
                             .frame(height: 220)
