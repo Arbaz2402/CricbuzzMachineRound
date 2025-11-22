@@ -23,6 +23,7 @@ struct MovieDetailView: View {
 private struct TrailerSection: View {
     @ObservedObject var viewModel: MovieDetailViewModel
     @Binding var showTrailer: Bool
+    var trailerFailed: Bool
     var body: some View {
         Group {
             if let ytID = viewModel.youtubeVideoID {
@@ -38,7 +39,12 @@ private struct TrailerSection: View {
                                 .resizable()
                                 .scaledToFill()
                         } else {
-                            Rectangle().fill(Color(.secondarySystemFill))
+                            ZStack {
+                                Color(.secondarySystemFill)
+                                Image(systemName: "film")
+                                    .font(.system(size: 40, weight: .regular))
+                                    .foregroundStyle(.secondary)
+                            }
                         }
                         Button {
                             withAnimation(.easeInOut) { showTrailer = true }
@@ -58,10 +64,21 @@ private struct TrailerSection: View {
                 .frame(height: 220)
                 .clipShape(RoundedRectangle(cornerRadius: 12))
             } else {
-                Rectangle()
-                    .fill(Color(.secondarySystemFill))
-                    .frame(height: 220)
-                    .clipShape(RoundedRectangle(cornerRadius: 12))
+                ZStack {
+                    Color(.secondarySystemFill)
+                    VStack(spacing: 8) {
+                        Image(systemName: "film")
+                            .font(.system(size: 40, weight: .regular))
+                            .foregroundStyle(.secondary)
+                        if trailerFailed {
+                            Text("Trailer not available")
+                                .font(.subheadline.weight(.semibold))
+                                .foregroundStyle(.secondary)
+                        }
+                    }
+                }
+                .frame(height: 220)
+                .clipShape(RoundedRectangle(cornerRadius: 12))
             }
         }
     }
@@ -81,24 +98,41 @@ private struct HeaderSection: View {
                     .clipped()
                     .cornerRadius(10)
             } else {
-                Rectangle()
-                    .fill(Color(.secondarySystemFill))
-                    .frame(width: 100, height: 150)
-                    .cornerRadius(10)
+                ZStack {
+                    Color(.secondarySystemFill)
+                    Image(systemName: "film")
+                        .foregroundStyle(.secondary)
+                }
+                .frame(width: 100, height: 150)
+                .cornerRadius(10)
             }
             VStack(alignment: .leading, spacing: 8) {
                 Text(detail.title).font(.title2).bold()
                 HStack(spacing: 12) {
-                    if let runtime = detail.runtime { Label(RuntimeFormatter.format(runtime), systemImage: "clock") }
-                    if let rating = detail.voteAverage { Label(String(format: "%.1f", rating), systemImage: "star.fill") }
+                    if let runtime = detail.runtime {
+                        Label(RuntimeFormatter.format(runtime), systemImage: "clock")
+                    } else {
+                        Label("--", systemImage: "clock")
+                    }
+                    if let rating = detail.voteAverage {
+                        Label(String(format: "%.1f", rating), systemImage: "star.fill")
+                    } else {
+                        Label("--", systemImage: "star.fill")
+                    }
                 }
                 .font(.subheadline)
                 .foregroundStyle(.secondary)
-                if let genres = detail.genres, !genres.isEmpty {
-                    Text(genres.map { $0.name }.joined(separator: ", "))
-                        .font(.footnote)
-                        .foregroundStyle(.secondary)
+                Group {
+                    if let genres = detail.genres, !genres.isEmpty {
+                        Text(genres.map { $0.name }.joined(separator: ", "))
+                    } else {
+                        RoundedRectangle(cornerRadius: 4)
+                            .fill(Color(.secondarySystemFill))
+                            .frame(height: 12)
+                    }
                 }
+                .font(.footnote)
+                .foregroundStyle(.secondary)
             }
             Spacer()
             Button(action: onToggleFavorite) {
@@ -124,11 +158,11 @@ private struct OverviewSection: View {
 private struct CastSection: View {
     let credits: Credits?
     var body: some View {
-        if let cast = credits?.cast, !cast.isEmpty {
-            VStack(alignment: .leading, spacing: 8) {
-                Text("Cast").font(.headline)
-                ScrollView(.horizontal, showsIndicators: false) {
-                    HStack(alignment: .top, spacing: 12) {
+        VStack(alignment: .leading, spacing: 8) {
+            Text("Cast").font(.headline)
+            ScrollView(.horizontal, showsIndicators: false) {
+                HStack(alignment: .top, spacing: 12) {
+                    if let cast = credits?.cast, !cast.isEmpty {
                         ForEach(cast) { member in
                             VStack(spacing: 6) {
                                 if let url = ImageURLBuilder.posterURL(path: member.profilePath) {
@@ -152,6 +186,22 @@ private struct CastSection: View {
                                     .lineLimit(2)
                                     .multilineTextAlignment(.center)
                                     .frame(width: 70, height: 32, alignment: .top)
+                            }
+                            .frame(width: 70, alignment: .top)
+                        }
+                    } else {
+                        ForEach(0..<8, id: \.self) { _ in
+                            VStack(spacing: 6) {
+                                ZStack {
+                                    Color(.secondarySystemFill)
+                                    Image(systemName: "person.fill")
+                                        .foregroundStyle(.secondary)
+                                }
+                                .frame(width: 70, height: 100)
+                                .cornerRadius(8)
+                                RoundedRectangle(cornerRadius: 6)
+                                    .fill(Color(.secondarySystemFill))
+                                    .frame(width: 70, height: 14)
                             }
                             .frame(width: 70, alignment: .top)
                         }
@@ -181,7 +231,7 @@ private struct Chip: View {
     var body: some View {
         ScrollView {
             VStack(alignment: .leading, spacing: 16) {
-                TrailerSection(viewModel: viewModel, showTrailer: $showTrailer)
+                TrailerSection(viewModel: viewModel, showTrailer: $showTrailer, trailerFailed: trailerFailed)
                 if let d = viewModel.detail {
                     HeaderSection(detail: d, isFavorite: viewModel.isFavorite, onToggleFavorite: { viewModel.toggleFavorite() })
                     if let overview = d.overview, !overview.isEmpty {
@@ -208,6 +258,17 @@ private struct Chip: View {
         }
         .overlay(loadingOverlay)
         .task { await viewModel.load() }
+        .onChange(of: viewModel.videos) { _ in
+            if viewModel.youtubeVideoID == nil {
+                trailerFailed = false
+                Task {
+                    try? await Task.sleep(nanoseconds: 1_200_000_000)
+                    if viewModel.youtubeVideoID == nil { trailerFailed = true }
+                }
+            } else {
+                trailerFailed = false
+            }
+        }
         .background(Color(.systemBackground).ignoresSafeArea())
     }
 

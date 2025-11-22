@@ -26,18 +26,22 @@ The app uses **The Movie Database (TMDb)** APIs to:
 ### 1.2 TMDb API key
 
 1. Create an account at https://www.themoviedb.org and generate an API key (v3).
-2. Open `CricbuzzMachineRound/Common/APIConfig.swift` (or equivalent config file).
+2. Open `CricbuzzMachineRound/Utils/APIConfig.swift`.
 3. Set your TMDb key:
 
 ```swift
-enum APIConfig {
-    static let apiKey: String = "YOUR_TMDB_API_KEY"   // <- replace
-    static let baseURL = URL(string: "https://api.themoviedb.org/3")!
-    static let defaultLanguage = "en-US"
+final class APIConfig {
+    static let shared = APIConfig()
+    var apiKey: String = "YOUR_TMDB_API_KEY" // <- replace
+
+    let baseURL = URL(string: "https://api.themoviedb.org/3")!
+    let imagesBaseURL = URL(string: "https://image.tmdb.org/t/p")!
+    let defaultLanguage = "en-IN"
+    let defaultImageSize = "w500"
 }
 ```
 
-The networking layer automatically appends `api_key` and `language` to all endpoints.
+The networking layer automatically appends `api_key` and `language` to all requests.
 
 ### 1.3 Dependencies (Swift Package Manager)
 
@@ -73,13 +77,11 @@ On first build, Xcode will:
 The app follows a **clean MVVM** structure with thin views and test‑friendly view models.
 
 - `App/` – App entry point and root navigation.
-- `Common/` – `APIConfig`, constants, small extensions.
-- `Networking/` – Core networking: `NetworkService`, `Endpoint`, error handling.
-- `Services/` – TMDb‑specific services (`MovieService`, `MatchService` etc.).
-- `Models/` – TMDb response models (`Movie`, `MovieDetail`, `VideoPage`, `Credits`, etc.).
-- `ViewModels/` – `MovieListViewModel`, `MovieDetailViewModel`, favorites store.
-- `Views/` – SwiftUI screens and components (`MovieListView`, `MovieRowView`, `MovieDetailView`, trailer player wrapper views).
-- `Utils/` – `YouTubeSDKPlayerView` (SwiftUI wrapper around `YTPlayerView`).
+- `Services/` – TMDb endpoints via `MovieService`, request plumbing in `NetworkService`.
+- `Models/` – TMDb models (`Movie`, `MovieDetail`, `VideoPage`, `Credits`, etc.).
+- `ViewModels/` – `MovieListViewModel`, `MovieDetailViewModel`, favorites sync.
+- `Views/` – SwiftUI screens/components (`MovieListView`, `MovieRowView`, `MovieDetailView`, `FavoritesListView`).
+- `Utils/` – `APIConfig`, `ImageURLBuilder`, `FavoritesStore`, `YouTubeSDKPlayerView`, `Formatters`.
 
 Key design points:
 
@@ -108,6 +110,7 @@ Key design points:
 
 - **Pagination**: Infinite scroll using `loadMoreIfNeeded` in `MovieListViewModel`.
 - **Favorites**: Heart toggles call a shared `FavoritesStore` and instantly update UI.
+- **State restore**: When you cancel a search, the list restores to your pre‑search position.
 
 ### 3.2 Movie Detail Screen
 
@@ -120,8 +123,8 @@ When you tap a movie, the app pushes `MovieDetailView`, which shows:
 
   - Filtered to **`site == "YouTube"` AND `type == "Trailer"`**.
   - Uses `YouTubeSDKPlayerView` (SwiftUI wrapper around `YTPlayerView`) for in‑app playback.
-  - Initial state: backdrop image with a `Trailer` button.
-  - After tapping `Trailer`, the inline player replaces the backdrop and starts playing (autoplay requested via playerVars).
+  - Initial state: backdrop image with a centered `Trailer` button.
+  - After tapping, the inline player replaces the backdrop and starts playing.
   - Native YouTube controls (including fullscreen) are available inside the player.
 
 - **Header section**
@@ -152,7 +155,7 @@ When you tap a movie, the app pushes `MovieDetailView`, which shows:
 
 - **Debounced input** in `MovieListViewModel` to avoid hammering the API.
 - Cancels in‑flight search requests when the query changes.
-- Supports pagination for search results (when not in favorites‑only mode).
+- Paginates results. Only scrolls to top after new results arrive. Canceling search restores prior scroll position.
 
 ### 3.4 Favorites
 
@@ -195,7 +198,8 @@ When you tap a movie, the app pushes `MovieDetailView`, which shows:
   - SDWebImage’s disk cache helps for images that were previously loaded, but JSON data is not cached.
 
 - **Tests**
-  - The code is structured to support unit tests for ViewModels and networking, but test targets are not included in this round.
+  - Included unit tests for `MovieService` (all endpoints via URLProtocol stub) and `RuntimeFormatter`.
+  - More can be added (VM retries, negative paths, UI tests).
 
 - **Accessibility & Localization**
   - Basic Dynamic Type support comes from SwiftUI, but labels/hit targets can be further tuned.

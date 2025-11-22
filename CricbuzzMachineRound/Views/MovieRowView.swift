@@ -39,7 +39,11 @@ private struct PosterView: View {
                     .resizable()
                     .scaledToFill()
             } else {
-                Color(.secondarySystemFill)
+                ZStack {
+                    Color(.secondarySystemFill)
+                    Image(systemName: "film")
+                        .foregroundStyle(.secondary)
+                }
             }
         }
         .frame(width: 110, height: 165)

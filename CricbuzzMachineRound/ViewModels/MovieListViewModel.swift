@@ -62,6 +62,7 @@ final class MovieListViewModel: ObservableObject {
             totalPages = page.totalPages
             lastQuery = ""
             movies = page.results
+            prefetchRuntimes(for: page.results)
         } catch {
             errorMessage = error.localizedDescription
         }
@@ -80,6 +81,7 @@ final class MovieListViewModel: ObservableObject {
             totalPages = page.totalPages
             lastQuery = query
             movies = page.results
+            prefetchRuntimes(for: page.results)
         } catch {
             errorMessage = error.localizedDescription
         }
@@ -138,14 +140,31 @@ final class MovieListViewModel: ObservableObject {
                 currentPage = page.page
                 totalPages = page.totalPages
                 movies.append(contentsOf: page.results)
+                prefetchRuntimes(for: page.results)
             } else {
                 let page = try await moviesService.search(query: lastQuery, page: currentPage + 1)
                 currentPage = page.page
                 totalPages = page.totalPages
                 movies.append(contentsOf: page.results)
+                prefetchRuntimes(for: page.results)
             }
         } catch {
             errorMessage = error.localizedDescription
+        }
+    }
+
+    private func prefetchRuntimes(for newMovies: [Movie], maxCount: Int = 12) {
+        let subset = Array(newMovies.prefix(maxCount))
+        for m in subset {
+            if runtimes[m.id] != nil { continue }
+            Task.detached { [moviesService] in
+                do {
+                    let detail = try await moviesService.detail(id: m.id)
+                    if let rt = detail.runtime {
+                        await MainActor.run { [weak self] in self?.runtimes[m.id] = rt }
+                    }
+                } catch { }
+            }
         }
     }
 }
