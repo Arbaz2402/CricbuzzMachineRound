@@ -241,6 +241,7 @@ private struct Chip: View {
                 CastSection(credits: viewModel.credits)
             }
             .padding()
+            .refreshable { await viewModel.load() }
         }
         .navigationBarTitleDisplayMode(.inline)
         .toolbar {

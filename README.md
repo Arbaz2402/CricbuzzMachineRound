@@ -14,6 +14,25 @@ The app uses **The Movie Database (TMDb)** APIs to:
 
 ---
 
+## App Preview
+
+<table>
+  <tr>
+    <td align="center"><img src="https://via.placeholder.com/200x430?text=Screenshot+1" alt="Screenshot 1" width="200"/></td>
+    <td align="center"><img src="https://via.placeholder.com/200x430?text=Screenshot+2" alt="Screenshot 2" width="200"/></td>
+    <td align="center"><img src="https://via.placeholder.com/200x430?text=Screenshot+3" alt="Screenshot 3" width="200"/></td>
+  </tr>
+  <tr>
+    <td align="center"><img src="https://via.placeholder.com/200x430?text=Screenshot+4" alt="Screenshot 4" width="200"/></td>
+    <td align="center"><img src="https://via.placeholder.com/200x430?text=Screenshot+5" alt="Screenshot 5" width="200"/></td>
+    <td align="center"><img src="https://via.placeholder.com/200x430?text=Screenshot+6" alt="Screenshot 6" width="200"/></td>
+  </tr>
+</table>
+
+Replace the placeholder image URLs with your actual screenshot paths (e.g., images in the repo).
+
+---
+
 ## 1. Setup
 
 ### 1.1 Requirements
