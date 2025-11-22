@@ -1,6 +1,6 @@
 # TMDb Movie Browser
 
-SwiftUI + MVVM movie app built for the Cricbuzz machine coding round. 
+SwiftUI + MVVM movie app
 
 The app uses **The Movie Database (TMDb)** APIs to:
 
@@ -229,5 +229,3 @@ When you tap a movie, the app pushes `MovieDetailView`, which shows:
 - Then open **`MovieDetailView`** and **`MovieDetailViewModel`** to see how details, trailers, and cast are loaded.
 - Look at **`MovieService`** to see how TMDb endpoints are modeled in one place.
 - `YouTubeSDKPlayerView` in **`Utils/`** shows how `YTPlayerView` is wrapped for SwiftUI and configured for in‑app playback.
-
-The code is intentionally structured and commented to be readable in a short interview review window, while still demonstrating real‑world patterns: MVVM, async/await networking, debounced search, favorites persistence, and in‑app media playback.
