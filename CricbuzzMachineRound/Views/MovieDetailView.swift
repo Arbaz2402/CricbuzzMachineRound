@@ -179,8 +179,20 @@ private func formattedRuntime(_ minutes: Int) -> String {
             }
             .padding()
         }
-        .navigationTitle("Details")
         .navigationBarTitleDisplayMode(.inline)
+        .toolbar {
+            ToolbarItem(placement: .principal) {
+                if let d = viewModel.detail {
+                    Text(d.title)
+                        .font(.headline)
+                        .multilineTextAlignment(.center)
+                        .lineLimit(2)
+                        .minimumScaleFactor(0.8)
+                } else {
+                    EmptyView()
+                }
+            }
+        }
         .overlay(loadingOverlay)
         .task { await viewModel.load() }
         .background(Color(.systemBackground).ignoresSafeArea())

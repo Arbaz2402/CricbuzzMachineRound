@@ -8,6 +8,9 @@ import SwiftUI
 struct MovieListView: View {
     @StateObject private var viewModel = MovieListViewModel()
     @State private var didScrollToTopForActiveSearch = false
+    @State private var lastScrolledQuery: String = ""
+    @State private var lastNonSearchAnchorID: Int?
+    @State private var restoreAnchorID: Int?
 
     var body: some View {
         NavigationStack {
@@ -48,6 +51,12 @@ struct MovieListView: View {
                                             await viewModel.loadMoreIfNeeded(currentItem: movie)
                                             await viewModel.loadRuntimeIfNeeded(for: movie)
                                         }
+                                        .onAppear {
+                                            // Track position only when not searching, so we can restore later
+                                            if viewModel.searchText.isEmpty {
+                                                lastNonSearchAnchorID = movie.id
+                                            }
+                                        }
                                     }
                                     if viewModel.isLoadingMore {
                                         HStack { Spacer(); ProgressView().padding(); Spacer() }
@@ -55,15 +64,29 @@ struct MovieListView: View {
                                 }
                             }
                             .refreshable { await refresh() }
-                            // When the search text changes, scroll back to the top anchor
+                            // Only scroll to top after new search results arrive
+                            .onChange(of: viewModel.movies) { _ in
+                                let query = viewModel.searchText
+                                guard !query.isEmpty else { return }
+                                // Avoid jumping while typing; scroll when results update for this query
+                                if lastScrolledQuery != query {
+                                    withAnimation { proxy.scrollTo("top", anchor: .top) }
+                                    lastScrolledQuery = query
+                                }
+                            }
+                            // Capture anchor when search starts; restore when canceling
                             .onChange(of: viewModel.searchText) { newValue in
                                 if newValue.isEmpty {
-                                    // Reset for next search, but do not scroll when canceling
                                     didScrollToTopForActiveSearch = false
-                                } else if !didScrollToTopForActiveSearch {
-                                    // Scroll to top only once at the start of a search
-                                    withAnimation { proxy.scrollTo("top", anchor: .top) }
-                                    didScrollToTopForActiveSearch = true
+                                    lastScrolledQuery = ""
+                                    if let id = restoreAnchorID {
+                                        // Restore to where user was before search
+                                        withAnimation { proxy.scrollTo(id, anchor: .top) }
+                                        restoreAnchorID = nil
+                                    }
+                                } else if restoreAnchorID == nil {
+                                    // First time entering a search session; remember current anchor
+                                    restoreAnchorID = lastNonSearchAnchorID
                                 }
                             }
                         }
@@ -86,10 +109,7 @@ struct MovieListView: View {
                     NavigationLink {
                         FavoritesListView(viewModel: viewModel)
                     } label: {
-                        HStack(spacing: 4) {
-                            Image(systemName: "heart.fill")
-                            Text("Favorites")
-                        }
+                        Text("Favorites")
                     }
                 }
             }

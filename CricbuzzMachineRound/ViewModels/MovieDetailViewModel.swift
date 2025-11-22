@@ -44,17 +44,40 @@ final class MovieDetailViewModel: ObservableObject {
         isLoading = true
         errorMessage = nil
         do {
+            // Load critical content (detail + videos). These drive the UI.
             async let d: MovieDetail = service.detail(id: id)
             async let v: VideoPage = service.videos(id: id)
-            async let c: Credits = service.credits(id: id)
             self.detail = try await d
             let videosPage = try await v
             self.videos = videosPage.results
-            self.credits = try await c
         } catch {
             errorMessage = error.localizedDescription
         }
         isLoading = false
+
+        // Load credits independently; if it fails, retry silently in background
+        await loadCreditsWithRetry()
+    }
+
+    private func loadCreditsWithRetry(maxAttempts: Int = 3, baseDelay: UInt64 = 300_000_000) async {
+        // Try once immediately
+        do {
+            self.credits = try await service.credits(id: id)
+            return
+        } catch {
+            // fall through to retries
+        }
+
+        for attempt in 1...maxAttempts {
+            do {
+                self.credits = try await service.credits(id: id)
+                return
+            } catch {
+                // exponential backoff: 0.3s, 0.6s, 1.2s, ...
+                let delay = baseDelay * (1 << (attempt - 1))
+                try? await Task.sleep(nanoseconds: delay)
+            }
+        }
     }
 
     func toggleFavorite() {
