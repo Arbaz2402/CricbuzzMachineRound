@@ -11,7 +11,7 @@ import SwiftUI
 struct CricbuzzMachineRoundApp: App {
     var body: some Scene {
         WindowGroup {
-            ContentView()
+            MovieListView()
         }
     }
 }
