@@ -17,6 +17,7 @@ final class MovieListViewModel: ObservableObject {
     @Published private(set) var errorMessage: String?
     @Published private(set) var favoriteIDs: Set<Int> = []
     @Published var showFavoritesOnly: Bool = false
+    @Published private(set) var runtimes: [Int: Int] = [:] // movieID -> runtime in minutes
 
     private let moviesService: MovieServicing
     private let favorites: FavoritesStoring
@@ -90,6 +91,24 @@ final class MovieListViewModel: ObservableObject {
     func toggleFavorite(id: Int) {
         favorites.toggleFavorite(id: id)
         favoriteIDs = favorites.all()
+    }
+
+    // MARK: - Runtime support for list rows
+
+    func runtime(for movieID: Int) -> Int? {
+        runtimes[movieID]
+    }
+
+    func loadRuntimeIfNeeded(for movie: Movie) async {
+        guard runtimes[movie.id] == nil else { return }
+        do {
+            let detail = try await moviesService.detail(id: movie.id)
+            if let rt = detail.runtime {
+                runtimes[movie.id] = rt
+            }
+        } catch {
+            // For list display, silently ignore runtime failures
+        }
     }
 
     private func handleDebouncedSearch(text: String) async {

@@ -83,18 +83,17 @@ private func formattedRuntime(_ minutes: Int) -> String {
                                         .shadow(radius: 4)
                                 }
                                 .buttonStyle(.plain)
+                                .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .center)
                             }
                         }
                         .frame(height: 220)
                         .clipShape(RoundedRectangle(cornerRadius: 12))
                     } else {
-                        ZStack {
-                            Rectangle().fill(.ultraThinMaterial)
-                            Text("No trailer available")
-                                .foregroundStyle(.secondary)
-                        }
-                        .frame(height: 220)
-                        .clipShape(RoundedRectangle(cornerRadius: 12))
+                        // Always show a neutral placeholder (no text) to avoid layout jumps
+                        Rectangle()
+                            .fill(Color(.secondarySystemFill))
+                            .frame(height: 220)
+                            .clipShape(RoundedRectangle(cornerRadius: 12))
                     }
                 }
 

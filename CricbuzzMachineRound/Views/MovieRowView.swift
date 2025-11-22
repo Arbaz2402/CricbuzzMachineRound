@@ -9,7 +9,20 @@ import SDWebImageSwiftUI
 struct MovieRowView: View {
     let movie: Movie
     let isFavorite: Bool
+    let runtimeMinutes: Int?
     let onFavoriteToggle: () -> Void
+
+    private func formattedRuntime(_ minutes: Int) -> String {
+        let hours = minutes / 60
+        let mins = minutes % 60
+        if hours > 0 && mins > 0 {
+            return "\(hours)h \(mins)m"
+        } else if hours > 0 {
+            return "\(hours)h"
+        } else {
+            return "\(mins)m"
+        }
+    }
 
     var body: some View {
         HStack(alignment: .top, spacing: 14) {
@@ -66,6 +79,16 @@ struct MovieRowView: View {
                     }
                 }
                 .font(.caption)
+
+                if let runtime = runtimeMinutes {
+                    HStack(spacing: 6) {
+                        Image(systemName: "clock")
+                            .foregroundStyle(.secondary)
+                        Text(formattedRuntime(runtime))
+                            .foregroundStyle(.secondary)
+                    }
+                    .font(.caption)
+                }
             }
             .frame(maxWidth: .infinity, alignment: .leading)
             Spacer(minLength: 0)
@@ -77,6 +100,6 @@ struct MovieRowView: View {
 }
 
 #Preview {
-    MovieRowView(movie: .init(id: 1, title: "The Batman", overview: "Vengeance.", posterPath: nil, backdropPath: nil, voteAverage: 7.8, releaseDate: "2022-03-04"), isFavorite: true, onFavoriteToggle: {})
+    MovieRowView(movie: .init(id: 1, title: "The Batman", overview: "Vengeance.", posterPath: nil, backdropPath: nil, voteAverage: 7.8, releaseDate: "2022-03-04"), isFavorite: true, runtimeMinutes: 30, onFavoriteToggle: {})
         .padding()
 }

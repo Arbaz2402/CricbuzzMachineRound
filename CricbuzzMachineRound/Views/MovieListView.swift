@@ -7,18 +7,12 @@ import SwiftUI
 
 struct MovieListView: View {
     @StateObject private var viewModel = MovieListViewModel()
-    
-    private var displayedMovies: [Movie] {
-        if viewModel.showFavoritesOnly {
-            return viewModel.movies.filter { viewModel.favoriteIDs.contains($0.id) }
-        }
-        return viewModel.movies
-    }
+    @State private var didScrollToTopForActiveSearch = false
 
     var body: some View {
         NavigationStack {
             Group {
-                if let error = viewModel.errorMessage, displayedMovies.isEmpty {
+                if let error = viewModel.errorMessage, viewModel.movies.isEmpty {
                     VStack(spacing: 12) {
                         Text("Something went wrong").font(.headline)
                         Text(error).font(.subheadline).foregroundStyle(.secondary)
@@ -27,34 +21,53 @@ struct MovieListView: View {
                     }
                     .frame(maxWidth: .infinity, maxHeight: .infinity)
                 } else {
-                    ScrollView {
-                        LazyVStack(alignment: .leading, spacing: 0) {
-                            if viewModel.isLoading && displayedMovies.isEmpty {
-                                ForEach(0..<6, id: \.self) { _ in
-                                    MovieRowSkeleton()
-                                        .padding(.horizontal, 16)
-                                        .padding(.vertical, 8)
-                                }
-                            } else {
-                                ForEach(displayedMovies) { movie in
-                                    NavigationLink(value: movie) {
-                                        MovieRowView(
-                                            movie: movie,
-                                            isFavorite: viewModel.favoriteIDs.contains(movie.id),
-                                            onFavoriteToggle: { viewModel.toggleFavorite(id: movie.id) }
-                                        )
-                                        .padding(.horizontal, 16)
-                                        .padding(.vertical, 8)
+                    ScrollViewReader { proxy in
+                        ScrollView {
+                            LazyVStack(alignment: .leading, spacing: 0) {
+                                // Anchor for scrolling to top when search/query changes
+                                Color.clear.frame(height: 0).id("top")
+                                if viewModel.isLoading && viewModel.movies.isEmpty {
+                                    ForEach(0..<6, id: \.self) { _ in
+                                        MovieRowSkeleton()
+                                            .padding(.horizontal, 16)
+                                            .padding(.vertical, 8)
                                     }
-                                    .task { await viewModel.loadMoreIfNeeded(currentItem: movie) }
+                                } else {
+                                    ForEach(viewModel.movies) { movie in
+                                        NavigationLink(value: movie) {
+                                            MovieRowView(
+                                                movie: movie,
+                                                isFavorite: viewModel.favoriteIDs.contains(movie.id),
+                                                runtimeMinutes: viewModel.runtime(for: movie.id),
+                                                onFavoriteToggle: { viewModel.toggleFavorite(id: movie.id) }
+                                            )
+                                            .padding(.horizontal, 16)
+                                            .padding(.vertical, 8)
+                                        }
+                                        .task {
+                                            await viewModel.loadMoreIfNeeded(currentItem: movie)
+                                            await viewModel.loadRuntimeIfNeeded(for: movie)
+                                        }
+                                    }
+                                    if viewModel.isLoadingMore {
+                                        HStack { Spacer(); ProgressView().padding(); Spacer() }
+                                    }
                                 }
-                                if viewModel.isLoadingMore {
-                                    HStack { Spacer(); ProgressView().padding(); Spacer() }
+                            }
+                            .refreshable { await refresh() }
+                            // When the search text changes, scroll back to the top anchor
+                            .onChange(of: viewModel.searchText) { newValue in
+                                if newValue.isEmpty {
+                                    // Reset for next search, but do not scroll when canceling
+                                    didScrollToTopForActiveSearch = false
+                                } else if !didScrollToTopForActiveSearch {
+                                    // Scroll to top only once at the start of a search
+                                    withAnimation { proxy.scrollTo("top", anchor: .top) }
+                                    didScrollToTopForActiveSearch = true
                                 }
                             }
                         }
                     }
-                    .refreshable { await refresh() }
                 }
             }
             .navigationDestination(for: Movie.self) { movie in
@@ -66,17 +79,17 @@ struct MovieListView: View {
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .topBarLeading) {
-                    Text("Popular Movies")
+                    Text("Movies")
                         .font(.title.bold())
                 }
                 ToolbarItem(placement: .topBarTrailing) {
-                    Button {
-                        withAnimation(.easeInOut) { viewModel.showFavoritesOnly.toggle() }
+                    NavigationLink {
+                        FavoritesListView(viewModel: viewModel)
                     } label: {
-                        Image(systemName: viewModel.showFavoritesOnly ? "heart.fill" : "heart")
-                            .foregroundStyle(viewModel.showFavoritesOnly ? .red : .primary)
-                            .imageScale(.large)
-                            .accessibilityLabel(viewModel.showFavoritesOnly ? "Showing Favorites" : "Show Favorites")
+                        HStack(spacing: 4) {
+                            Image(systemName: "heart.fill")
+                            Text("Favorites")
+                        }
                     }
                 }
             }
@@ -87,7 +100,13 @@ struct MovieListView: View {
                 }
             ), placement: .navigationBarDrawer(displayMode: .always))
             // Debounced in ViewModel; no need for extra triggers here
-            .task { await viewModel.loadPopular() }
+            .task {
+                // Only perform initial load when there is no data yet.
+                // This prevents search results from being overwritten when returning from detail.
+                if viewModel.movies.isEmpty {
+                    await viewModel.loadPopular()
+                }
+            }
             .background(Color(.systemBackground).ignoresSafeArea())
         }
     }
