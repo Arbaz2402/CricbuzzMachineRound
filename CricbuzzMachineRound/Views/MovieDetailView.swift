@@ -35,17 +35,7 @@ private struct Chip: View {
     }
 }
 
-private func formattedRuntime(_ minutes: Int) -> String {
-    let hours = minutes / 60
-    let mins = minutes % 60
-    if hours > 0 && mins > 0 {
-        return "\(hours)h \(mins)m"
-    } else if hours > 0 {
-        return "\(hours)h"
-    } else {
-        return "\(mins)m"
-    }
-}
+// Runtime formatting centralized in Utils/Formatters.swift
 
     var body: some View {
         ScrollView {
@@ -116,7 +106,7 @@ private func formattedRuntime(_ minutes: Int) -> String {
                         VStack(alignment: .leading, spacing: 8) {
                             Text(d.title).font(.title2).bold()
                             HStack(spacing: 12) {
-                                if let runtime = d.runtime { Label(formattedRuntime(runtime), systemImage: "clock") }
+                                if let runtime = d.runtime { Label(RuntimeFormatter.format(runtime), systemImage: "clock") }
                                 if let rating = d.voteAverage { Label(String(format: "%.1f", rating), systemImage: "star.fill") }
                             }
                             .font(.subheadline)

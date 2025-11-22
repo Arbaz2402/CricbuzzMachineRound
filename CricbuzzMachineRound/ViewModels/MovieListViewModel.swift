@@ -16,7 +16,6 @@ final class MovieListViewModel: ObservableObject {
     @Published var searchText: String = ""
     @Published private(set) var errorMessage: String?
     @Published private(set) var favoriteIDs: Set<Int> = []
-    @Published var showFavoritesOnly: Bool = false
     @Published private(set) var runtimes: [Int: Int] = [:] // movieID -> runtime in minutes
 
     private let moviesService: MovieServicing
@@ -122,7 +121,6 @@ final class MovieListViewModel: ObservableObject {
 
     // MARK: - Pagination
     func loadMoreIfNeeded(currentItem item: Movie?) async {
-        guard !showFavoritesOnly else { return }
         guard !isLoading, !isLoadingMore else { return }
         guard currentPage < totalPages else { return }
         guard let item else { return }

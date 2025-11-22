@@ -12,18 +12,6 @@ struct MovieRowView: View {
     let runtimeMinutes: Int?
     let onFavoriteToggle: () -> Void
 
-    private func formattedRuntime(_ minutes: Int) -> String {
-        let hours = minutes / 60
-        let mins = minutes % 60
-        if hours > 0 && mins > 0 {
-            return "\(hours)h \(mins)m"
-        } else if hours > 0 {
-            return "\(hours)h"
-        } else {
-            return "\(mins)m"
-        }
-    }
-
     var body: some View {
         HStack(alignment: .top, spacing: 14) {
             ZStack(alignment: .bottomTrailing) {
@@ -84,7 +72,7 @@ struct MovieRowView: View {
                     HStack(spacing: 6) {
                         Image(systemName: "clock")
                             .foregroundStyle(.secondary)
-                        Text(formattedRuntime(runtime))
+                        Text(RuntimeFormatter.format(runtime))
                             .foregroundStyle(.secondary)
                     }
                     .font(.caption)
