@@ -15,18 +15,22 @@ The app uses **The Movie Database (TMDb)** APIs to:
 
 <table>
   <tr>
-    <td align="center"><img src="https://via.placeholder.com/200x430?text=Screenshot+1" alt="Screenshot 1" width="200"/></td>
-    <td align="center"><img src="https://via.placeholder.com/200x430?text=Screenshot+2" alt="Screenshot 2" width="200"/></td>
-    <td align="center"><img src="https://via.placeholder.com/200x430?text=Screenshot+3" alt="Screenshot 3" width="200"/></td>
+    <td align="center"><img src="![WhatsApp Image 2025-11-23 at 03 10 26](https://github.com/user-attachments/assets/03c6a0ce-742e-47aa-8bdb-f59038e44b96)
+" alt="Screenshot 1" width="200"/></td>
+    <td align="center"><img src="![WhatsApp Image 2025-11-23 at 03 10 27](https://github.com/user-attachments/assets/2e580a19-308c-4283-a299-b2ac344df7a9)
+" alt="Screenshot 2" width="200"/></td>
+    <td align="center"><img src="![WhatsApp Image 2025-11-23 at 03 10 27 (1)](https://github.com/user-attachments/assets/288be046-5031-41d4-9477-4c8dfc0a63f1)
+" alt="Screenshot 3" width="200"/></td>
   </tr>
   <tr>
-    <td align="center"><img src="https://via.placeholder.com/200x430?text=Screenshot+4" alt="Screenshot 4" width="200"/></td>
-    <td align="center"><img src="https://via.placeholder.com/200x430?text=Screenshot+5" alt="Screenshot 5" width="200"/></td>
-    <td align="center"><img src="https://via.placeholder.com/200x430?text=Screenshot+6" alt="Screenshot 6" width="200"/></td>
+    <td align="center"><img src="![WhatsApp Image 2025-11-23 at 03 10 27 (2)](https://github.com/user-attachments/assets/af367fb7-ce8e-4655-b605-6796a95cbf2e)
+" alt="Screenshot 4" width="200"/></td>
+    <td align="center"><img src="![WhatsApp Image 2025-11-23 at 03 10 28](https://github.com/user-attachments/assets/9452c030-7b3e-4a15-8a27-7ee695107e8a)
+" alt="Screenshot 5" width="200"/></td>
+    <td align="center"><img src="![WhatsApp Image 2025-11-23 at 03 10 28 (1)](https://github.com/user-attachments/assets/4cd457c2-c978-4caf-ad60-84433cdf7548)
+" alt="Screenshot 6" width="200"/></td>
   </tr>
 </table>
-
-Replace the placeholder image URLs with your actual screenshot paths (e.g., images in the repo).
 
 ---
 
