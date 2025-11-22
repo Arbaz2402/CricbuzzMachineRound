@@ -39,6 +39,12 @@ The app uses **The Movie Database (TMDb)** APIs to:
 
 ### 1.2 TMDb API key
 
+The API key is already configured in the project — no manual setup required.
+current API key: a445f21929a25afcd5a1a0ba1ce9a2fd
+
+If you need to change it:
+1. Open `CricbuzzMachineRound/Utils/APIConfig.swift`.
+2. Update `apiKey` with your TMDb API key (v3).
 1. Create an account at https://www.themoviedb.org and generate an API key (v3).
 2. Open `CricbuzzMachineRound/Utils/APIConfig.swift`.
 3. Set your TMDb key:
