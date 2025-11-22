@@ -1,4 +1,4 @@
-# TMDb Movie Browser – Cricbuzz Machine Round
+# TMDb Movie Browser
 
 SwiftUI + MVVM movie app built for the Cricbuzz machine coding round. 
 
