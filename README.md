@@ -9,9 +9,6 @@ The app uses **The Movie Database (TMDb)** APIs to:
 - **Search** movies by title
 - Mark movies as **favorites** (persisted across launches)
 - Play trailers **in‑app** using the YouTube iOS Player Helper SDK
-
-> This product uses the TMDb API but is not endorsed or certified by TMDb.
-
 ---
 
 ## 1. Setup
