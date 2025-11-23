@@ -91,6 +91,16 @@ On first build, Xcode will:
 - Launch directly into the **Home (Popular Movies)** screen
 
 ---
+### 1.5 Bundle Identifier & Signing (Personal Team)
+
+- The project is currently configured with the author's Apple Personal Team.
+- If you plan to run on your own device, change the bundle identifier and select your team:
+  1. In Xcode, select the project (blue icon) → Targets → `CricbuzzMachineRound` → Signing & Capabilities.
+  2. Change the Bundle Identifier (e.g., `com.yourname.CricbuzzMachineRound`).
+  3. Under Team, choose your Apple ID/Team so Xcode creates a provisioning profile.
+  4. Clean build (Shift+Cmd+K) and Run (Cmd+R).
+
+Note: Simulators do not require signing changes; physical devices do.
 
 ## 2. Architecture & Project Structure
 
