@@ -11,7 +11,6 @@ import SDWebImageSwiftUI
 struct MovieDetailView: View {
     let movieID: Int
     @StateObject private var viewModel: MovieDetailViewModel
-    @Environment(\.openURL) private var openURL
     @State private var showTrailer: Bool = false
     @State private var trailerFailed: Bool = false
 
@@ -19,6 +18,57 @@ struct MovieDetailView: View {
         self.movieID = movieID
         _viewModel = StateObject(wrappedValue: MovieDetailViewModel(id: movieID))
     }
+    var body: some View {
+        ScrollView {
+            VStack(alignment: .leading, spacing: 16) {
+                TrailerSection(viewModel: viewModel, showTrailer: $showTrailer, trailerFailed: trailerFailed)
+                if let d = viewModel.detail {
+                    HeaderSection(detail: d, isFavorite: viewModel.isFavorite, onToggleFavorite: { viewModel.toggleFavorite() })
+                    if let overview = d.overview, !overview.isEmpty {
+                        OverviewSection(text: overview)
+                    }
+                }
+                CastSection(credits: viewModel.credits)
+            }
+            .padding()
+            .refreshable { await viewModel.load() }
+        }
+        .navigationBarTitleDisplayMode(.inline)
+        .toolbar {
+            ToolbarItem(placement: .principal) {
+                if let d = viewModel.detail {
+                    Text(d.title)
+                        .font(.headline)
+                        .multilineTextAlignment(.center)
+                        .lineLimit(2)
+                        .minimumScaleFactor(0.8)
+                } else {
+                    EmptyView()
+                }
+            }
+        }
+        .overlay(loadingOverlay)
+        .task { await viewModel.load() }
+        .onChange(of: viewModel.videos) { _ in
+            if viewModel.youtubeVideoID == nil {
+                trailerFailed = false
+                Task {
+                    try? await Task.sleep(nanoseconds: 1_200_000_000)
+                    if viewModel.youtubeVideoID == nil { trailerFailed = true }
+                }
+            } else {
+                trailerFailed = false
+            }
+        }
+        .background(Color(.systemBackground).ignoresSafeArea())
+    }
+
+    @ViewBuilder private var loadingOverlay: some View {
+        if viewModel.isLoading && viewModel.detail == nil {
+            ProgressView().frame(maxWidth: .infinity, maxHeight: .infinity)
+        }
+    }
+}
 
 private struct TrailerSection: View {
     @ObservedObject var viewModel: MovieDetailViewModel
@@ -211,75 +261,6 @@ private struct CastSection: View {
         }
     }
 }
-
-// MARK: - Small UI helper
-private struct Chip: View {
-    let icon: String
-    let text: String
-    var body: some View {
-        HStack(spacing: 6) {
-            Image(systemName: icon).imageScale(.small)
-            Text(text)
-        }
-        .font(.footnote)
-        .padding(.vertical, 6)
-        .padding(.horizontal, 10)
-        .background(.ultraThinMaterial, in: Capsule())
-        .foregroundStyle(.white)
-    }
-}
-    var body: some View {
-        ScrollView {
-            VStack(alignment: .leading, spacing: 16) {
-                TrailerSection(viewModel: viewModel, showTrailer: $showTrailer, trailerFailed: trailerFailed)
-                if let d = viewModel.detail {
-                    HeaderSection(detail: d, isFavorite: viewModel.isFavorite, onToggleFavorite: { viewModel.toggleFavorite() })
-                    if let overview = d.overview, !overview.isEmpty {
-                        OverviewSection(text: overview)
-                    }
-                }
-                CastSection(credits: viewModel.credits)
-            }
-            .padding()
-            .refreshable { await viewModel.load() }
-        }
-        .navigationBarTitleDisplayMode(.inline)
-        .toolbar {
-            ToolbarItem(placement: .principal) {
-                if let d = viewModel.detail {
-                    Text(d.title)
-                        .font(.headline)
-                        .multilineTextAlignment(.center)
-                        .lineLimit(2)
-                        .minimumScaleFactor(0.8)
-                } else {
-                    EmptyView()
-                }
-            }
-        }
-        .overlay(loadingOverlay)
-        .task { await viewModel.load() }
-        .onChange(of: viewModel.videos) { _ in
-            if viewModel.youtubeVideoID == nil {
-                trailerFailed = false
-                Task {
-                    try? await Task.sleep(nanoseconds: 1_200_000_000)
-                    if viewModel.youtubeVideoID == nil { trailerFailed = true }
-                }
-            } else {
-                trailerFailed = false
-            }
-        }
-        .background(Color(.systemBackground).ignoresSafeArea())
-    }
-
-    @ViewBuilder private var loadingOverlay: some View {
-        if viewModel.isLoading && viewModel.detail == nil {
-            ProgressView().frame(maxWidth: .infinity, maxHeight: .infinity)
-        }
-    }
-}
-
 #Preview {
     NavigationStack { MovieDetailView(movieID: 1) }
 }
